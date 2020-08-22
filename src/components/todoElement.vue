@@ -3,26 +3,24 @@
     <div class="todo__element-container">
       <input
         class="todo__input"
-        :value="modelValue"
-        @input="$emit('update:modelValue', $event.target.value), changeElement($event.target.value)"
+        :value="message"
+        @input="changeVal({index: this.index, value: $event.target.value}), changeElement($event.target.value)"
       />
       <input
         type="checkbox"
         class="todo__checkbox"
         :checked="checked"
-        @change="$emit('remove'), removeElementAsync(this.id)"
+        @change="$emit('remove'), removeElementAsync({id: this.id, index: this.index})"
       />
     </div>
   </li>
 </template>
 
 <script>
-import { mapActions } from "vuex";
-
-let changing;
+import { mapActions, mapState, mapMutations } from "vuex";
 
 export default {
-  props: ["modelValue", "id"],
+  props: ["modelValue", "id", "index"],
   data() {
     return {
       checked: true,
@@ -30,12 +28,19 @@ export default {
   },
   methods: {
     ...mapActions(["removeElementAsync", "changeValAsync"]),
+    ...mapMutations(["changeVal"]),
     changeElement(value) {
       //call action after 0.5s, if no new changes are recieved
-      clearTimeout(changing);
-      changing = setTimeout(() => {
+      clearTimeout(this.changing);
+      this.changing = setTimeout(() => {
         this.changeValAsync({ id: this.id, value });
       }, 500);
+    },
+  },
+  computed: {
+    ...mapState(["elements"]),
+    message() {
+      return this.elements[this.index].value;
     },
   },
 };

@@ -5,6 +5,7 @@ import idb from '@/api/idb';
 let removeShow
 
 export default createStore({
+    strict: true,
     state: {
         elements: [],
         show: false
@@ -20,6 +21,14 @@ export default createStore({
 
         changeShow(state, bool){
             state.show = bool
+        },
+
+        removeElement(state, index){
+            state.elements.splice(index, 1)
+        },
+
+        changeVal(state, {index, value}){
+            state.elements[index].value = value
         }
     },
     actions: {
@@ -51,12 +60,15 @@ export default createStore({
             
         },
 
-        async removeElementAsync({dispatch}, id){
+        async removeElementAsync({dispatch, commit}, {id, index}){
             //remove the element from IDB
             let valid = await idb.removeFromDB(id),
             success = valid()
             //if operation successed, show the alert
             dispatch('showTransition', success)
+            if(success){
+                commit('removeElement', index)
+            }
         },
 
         showTransition({commit}, success){

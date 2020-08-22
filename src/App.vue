@@ -7,8 +7,8 @@
           v-for="(element, index) in this.elements"
           :key="element.id"
           :id="element.id"
+          :index="index"
           v-model="element.value"
-          @remove="this.elements.splice(index, 1)"
         ></todo-element>
         <li class="todo__element">
           <div class="todo__element-container">

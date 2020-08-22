@@ -10,29 +10,32 @@
         type="checkbox"
         class="todo__checkbox"
         :checked="checked"
-        @change="$emit('remove'), removeElement()"
+        @change="$emit('remove'), removeElementAsync(this.id)"
       />
     </div>
   </li>
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
+let changing;
+
 export default {
   props: ["modelValue", "id"],
   data() {
     return {
       checked: true,
-      changing: false,
     };
   },
   methods: {
-    changeElement(val) {
-      //this.changing = setTimeout(() => {
-      this.$store.commit("changeVal", { id: this.id, val });
-      //}, 500);
-    },
-    removeElement() {
-      this.$store.commit("removeElement", this.id);
+    ...mapActions(["removeElementAsync", "changeValAsync"]),
+    changeElement(value) {
+      //call action after 0.5s, if no new changes are recieved
+      clearTimeout(changing);
+      changing = setTimeout(() => {
+        this.changeValAsync({ id: this.id, value });
+      }, 500);
     },
   },
 };

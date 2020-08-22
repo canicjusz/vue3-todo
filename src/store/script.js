@@ -7,51 +7,66 @@ let removeShow
 export default createStore({
     state: {
         elements: [],
-        newElementVal: '',
         show: false
     },
-    //heard that mutations have to be synchronous but even if they are not it works xD
     mutations: {
-        async addNewElement(state){
-            //get upcoming id
-            let upCommingID = this.getters.upCommingID,
-            //add element to IDB
-            valid = await idb.addToDB(state.newElementVal, upCommingID)
-            //if operation successed, show the alert, add element to an array and reset input value
-            if(valid()){
-                state.elements.push({id: upCommingID, value: state.newElementVal})
-                state.newElementVal = ''
-                this.commit("showTransiton")
-            }
+        addNewElement(state, obj){
+            state.elements.push(obj)
         },
         
-        async updateFromDB(state){
-            //get the elements from IDB and set them as elements array
-            state.elements = await idb.addToObject()
+        updateFromDB(state, arr){
+            state.elements = arr
         },
 
-        async removeElement(state, id){
-            //remove the element from IDB
-            let valid = await idb.removeFromDB(id)
-            //if operation successed, show the alert
-            if(valid()){
-                this.commit("showTransiton")
+        changeShow(state, bool){
+            state.show = bool
+        }
+    },
+    actions: {
+        async addNewElementAsync({commit, dispatch, getters}, value){
+            //create an element object
+            let obj = {value, id: getters.upCommingID},
+            //add element to IDB
+            valid = await idb.addToDB(obj),
+            success = valid()
+            //if operation successed, show the alert, add element to an array
+            dispatch('showTransition', success)
+            if(success){
+                commit('addNewElement', obj)
             }
         },
-        //gotta use destructuration, since you cant pass more than one argument (I guess?)
-        async changeVal(state, {id, val}){
+
+        async updateFromDBAsync({commit}){
+            //get array of the elements from IDB
+            let arr = await idb.addToObject()
+            commit('updateFromDB', arr)
+        },
+
+        async changeValAsync({dispatch}, obj){
             //set new value to an existing element 
-            let valid = await idb.addToDB(val, id)
+            let valid = await idb.addToDB(obj),
+            success = valid()
             //if operation successed, show the alert
-            if(valid()){
-                this.commit("showTransiton")
-            }
+            dispatch('showTransition', success)
+            
         },
-        //this is not working as expected
-        showTransiton(state){
-            state.show = true
-            clearTimeout(removeShow)
-            removeShow = setTimeout(()=>state.show = false, 1000)
+
+        async removeElementAsync({dispatch}, id){
+            //remove the element from IDB
+            let valid = await idb.removeFromDB(id),
+            success = valid()
+            //if operation successed, show the alert
+            dispatch('showTransition', success)
+        },
+
+        showTransition({commit}, success){
+            if(success){
+                //show an alert
+                commit('changeShow', true)
+                clearTimeout(removeShow)
+                //hide alert after 1s if showTransition is not recalled
+                removeShow = setTimeout(()=>commit('changeShow', false), 1000)
+            }
         }
     },
     getters: {

@@ -4,16 +4,19 @@
       <h2 class="todo__title">TODO LIST</h2>
       <ul class="todo__list">
         <todo-element
-          v-for="(element, index) in this.$store.state.elements"
+          v-for="(element, index) in this.elements"
           :key="element.id"
           :id="element.id"
           v-model="element.value"
-          @remove="this.$store.state.elements.splice(index, 1)"
+          @remove="this.elements.splice(index, 1)"
         ></todo-element>
         <li class="todo__element">
           <div class="todo__element-container">
-            <input class="todo__input" v-model="this.$store.state.newElementVal" />
-            <button class="todo__button" @click="addNewElement(), newElementVal = ''">+</button>
+            <input class="todo__input" v-model="this.newElementVal" />
+            <button
+              class="todo__button"
+              @click="addNewElementAsync(this.newElementVal), this.newElementVal = ''"
+            >+</button>
           </div>
         </li>
       </ul>
@@ -25,18 +28,22 @@
 </template>
 <script>
 import todoElement from "./components/todoElement";
+import { mapState, mapActions } from "vuex";
 
 export default {
+  data() {
+    return {
+      newElementVal: "",
+    };
+  },
   components: {
     "todo-element": todoElement,
   },
-  methods: {
-    addNewElement() {
-      this.$store.commit("addNewElement");
-    },
-  },
+  methods: mapActions(["addNewElementAsync", "updateFromDBAsync"]),
+  computed: mapState(["elements"]),
   mounted() {
-    this.$store.commit("updateFromDB");
+    //get elements from IDB on mount
+    this.updateFromDBAsync();
   },
 };
 </script>

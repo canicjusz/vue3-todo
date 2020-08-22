@@ -48,10 +48,10 @@ export default {
             .onsuccess = () => true
     },
 
-    async addToDB(val, id){
+    async addToDB({value, id}){
         //put element into db, if successed return function, which returns true
         let db = await this.startDB()
-        return db.transaction(['todo'], 'readwrite').objectStore('todo').put(val, id)
+        return db.transaction(['todo'], 'readwrite').objectStore('todo').put(value, id)
            .onsuccess = () => true
     },
 

@@ -1,4 +1,4 @@
-# test
+# vue3-idb-todo
 
 ## Project setup
 ```

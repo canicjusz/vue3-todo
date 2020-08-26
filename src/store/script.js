@@ -5,7 +5,6 @@ import idb from '@/api/idb';
 let removeShow
 
 export default createStore({
-    strict: true,
     state: {
         elements: [],
         show: false

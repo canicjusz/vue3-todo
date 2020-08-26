@@ -1,0 +1,92 @@
+$dark: #2d4059
+$carrotish: #ea5455
+$green: #006400
+$skin: #decdc3
+$gray: #e5e5e5
+
+html, body, #app
+    display: flex
+    justify-content: center
+    align-items: center
+    background: $dark
+    margin: 0
+    width: 100%
+    height: 100%
+
+.todo
+
+    &__container
+        display: flex
+        flex-direction: column
+        align-items: center
+        border-radius: 20px
+        width: 400px
+        height: 600px
+        overflow: auto
+        background: $carrotish
+
+    &__title
+        color: $gray
+        font-family: Arial, Helvetica, sans-serif
+        margin: 20px 0 0 0
+
+    &__list
+        padding: 0 20px 20px 20px
+        margin: 0
+
+        &-leave-to
+            opacity: 0
+
+        &-enter-from
+            transform: scale(0)
+
+        &-leave-active
+            position: absolute
+
+        &-enter-active, &-leave-active, &-move
+            transition: all 0.4s ease
+
+    &__element
+        margin-top: 20px
+        display: flex
+        justify-content: center
+        align-items: center
+
+        &-container
+            width: 220px
+            display: flex
+            justify-content: space-between
+
+    &__button, &__checkbox
+        height: 30px
+        width: 30px
+        margin: 0
+        padding: 0
+        border: none
+        background: $gray
+
+    &__input
+        height: 30px
+        border: none
+        padding: 0
+
+.alert
+    position: absolute
+    display: flex
+    justify-content: center
+    align-items: center
+    font-size: 24px
+    color: $gray
+    font-family: Arial, Helvetica, sans-serif
+    background: $carrotish
+    width: 400px
+    height: 40px
+    border-bottom-left-radius: 20px
+    border-bottom-right-radius: 20px
+    margin: 0
+    top: 0
+    transition: transform .5s ease
+    transform: translateY(-40px)
+
+    &--show
+        transform: translateY(0px)

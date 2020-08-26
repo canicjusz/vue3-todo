@@ -1,20 +1,16 @@
 <template>
-  <li class="todo__element">
-    <div class="todo__element-container">
-      <input
-        class="todo__input"
-        :value="this.modelValue"
-        @input="changeVal({index: this.index, value: $event.target.value}), changeElement($event.target.value)"
-      />
-      <input
-        type="checkbox"
-        class="todo__checkbox"
-        :checked="checked"
-        :disabled="!checked"
-        @change="$emit('remove'), removeElementAsync({id: this.id, index: this.index}), this.checked=false"
-      />
-    </div>
-  </li>
+  <input
+    class="todo__input"
+    :value="this.modelValue"
+    @input="changeVal({index: this.index, value: $event.target.value}), changeElement($event.target.value)"
+  />
+  <input
+    type="checkbox"
+    class="todo__checkbox"
+    :checked="checked"
+    :disabled="!checked"
+    @change="$emit('remove'), removeElementAsync({id: this.id, index: this.index}), this.checked=false"
+  />
 </template>
 
 <script>

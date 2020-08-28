@@ -1,47 +1,51 @@
 <template>
   <input
     class="todo__input"
-    :value="this.modelValue"
-    @input="changeVal({index: this.index, value: $event.target.value}), changeElement($event.target.value)"
+    :value="modelValue"
+    @input="changeVal({index, value: $event.target.value}), changeElement($event.target.value)"
   />
   <input
     type="checkbox"
     class="todo__checkbox"
     :checked="checked"
     :disabled="!checked"
-    @change="$emit('remove'), removeElementAsync({id: this.id, index: this.index}), this.checked=false"
+    @change="$emit('remove'), removeElementAsync({id, index}), checked=false"
   />
 </template>
 
 <script>
-import { mapActions, mapMutations } from "vuex";
+import { mapActions, mapMutations, useStore } from "vuex";
+import { toRefs, ref, watch } from "vue";
 
 export default {
   props: ["modelValue", "id", "index"],
-  data() {
-    return {
-      checked: true,
-    };
-  },
-  methods: {
-    ...mapActions(["removeElementAsync", "changeValAsync"]),
-    ...mapMutations(["changeVal"]),
-    changeElement(value) {
-      //call action after 0.5s, if no new changes are recieved
-      clearTimeout(this.changing);
-      this.changing = setTimeout(() => {
-        this.changeValAsync({ id: this.id, value });
+  setup(props) {
+    //I mean this destructurisation
+    const { removeElementAsync } = mapActions(["removeElementAsync"]);
+    const { changeVal } = mapMutations(["changeVal"]);
+
+    const { id } = toRefs(props);
+    const { dispatch } = useStore();
+
+    const changeElement = (value) => {
+      clearTimeout(changing.value);
+      changing.value = setTimeout(() => {
+        //when I call this action from destructurisation it tells me that there is no 'this' object so I had to do a workaround
+        dispatch("changeValAsync", { id: id.value, value });
       }, 500);
-    },
-  },
-  watch: {
-    //if checked changes remove changing timeout. Have
-    //to do this because you could change the value and
-    //then remove the elements. Since change function runs
-    //with delay it can recreate the reestablish the element in IDB
-    checked() {
-      clearTimeout(this.changing);
-    },
+    };
+
+    const checked = ref(true);
+    const changing = ref(0);
+
+    watch(checked, () => clearTimeout(changing.value));
+
+    return {
+      changeVal,
+      changeElement,
+      checked,
+      removeElementAsync,
+    };
   },
 };
 </script>

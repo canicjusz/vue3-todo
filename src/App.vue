@@ -6,7 +6,7 @@
       <transition-group appear id="todo__list" class="todo__list" name="todo__list" tag="ul">
         <todo-element-container
           class="todo__element"
-          v-for="(element, index) in this.elements"
+          v-for="(element, index) in elements"
           :key="element.id"
         >
           <todo-element :id="element.id" :index="index" v-model="element.value"></todo-element>
@@ -15,7 +15,7 @@
           <input class="todo__input" v-model="newElementVal" />
           <button
             class="todo__button"
-            @click="addNewElementAsync(this.newElementVal), this.newElementVal = ''"
+            @click="addNewElementAsync(newElementVal), newElementVal = ''"
           >+</button>
         </todo-element-container>
       </transition-group>
@@ -25,23 +25,35 @@
 <script>
 import todoElement from "./components/todoElement";
 import todoElementContainer from "./components/todoElementContainer";
-import { mapState, mapActions } from "vuex";
+import { mapActions, useStore } from "vuex";
+import { ref, onMounted, computed } from "vue";
 
 export default {
-  data() {
-    return {
-      newElementVal: "",
-    };
-  },
   components: {
     "todo-element": todoElement,
     "todo-element-container": todoElementContainer,
   },
-  methods: mapActions(["addNewElementAsync", "updateFromDBAsync"]),
-  computed: mapState(["elements", "show"]),
-  mounted() {
-    //get elements from IDB on mount
-    this.updateFromDBAsync();
+  setup() {
+    const newElementVal = ref("");
+
+    const { state, dispatch } = useStore();
+
+    const { addNewElementAsync } = mapActions(["addNewElementAsync"]);
+
+    const elements = computed(() => state.elements);
+    const show = computed(() => state.show);
+
+    onMounted(() => {
+      //when I call this action from destructurisation (check todoElement component) it tells me that there is no 'this' object so I had to do a workaround
+      dispatch("updateFromDBAsync");
+    });
+
+    return {
+      newElementVal,
+      addNewElementAsync,
+      elements,
+      show,
+    };
   },
 };
 </script>

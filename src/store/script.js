@@ -47,7 +47,7 @@ export default createStore({
         async updateFromDBAsync({commit}){
             //get array of the elements from IDB
             let arr = await idb.addToObject()
-            commit('updateFromDB', arr)
+            commit('updateFromDB', arr) 
         },
 
         async changeValAsync({dispatch}, obj){

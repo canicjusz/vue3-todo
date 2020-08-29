@@ -1,8 +1,6 @@
 let 
 
-DB,
-
-request = window.indexedDB.open("ToDoList", 1)
+DB
 
 export default {
 
@@ -12,6 +10,7 @@ export default {
             if(DB){
                 return res(DB)
             }
+            const request = window.indexedDB.open("ToDoList", 1)
             request.onsuccess = () => {
                 DB = request.result;
                 res(request.result);

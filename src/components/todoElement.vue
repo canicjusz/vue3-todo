@@ -27,11 +27,14 @@ export default {
     const { id } = toRefs(props);
     const { dispatch } = useStore();
 
+    //when I call this action from destructurisation it tells me that there is no 'this' object so I had to do a workaround
+    const dispatchVuex = (action) => (args) => dispatch(action, args);
+    const changeValAsync = dispatchVuex("changeValAsync");
+
     const changeElement = (value) => {
       clearTimeout(changing.value);
       changing.value = setTimeout(() => {
-        //when I call this action from destructurisation it tells me that there is no 'this' object so I had to do a workaround
-        dispatch("changeValAsync", { id: id.value, value });
+        changeValAsync({ id: id.value, value });
       }, 500);
     };
 
